@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import javax.inject.Inject
 
 @MicronautTest
-class KikoTest {
+internal class KikoTest : BaseTestClass() {
 
     @Inject
     lateinit var application: EmbeddedApplication<*>
