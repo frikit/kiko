@@ -1,4 +1,4 @@
-package org.github.frikit.models
+package org.github.frikit.models.old
 
 data class Landlord(
     val id: String,

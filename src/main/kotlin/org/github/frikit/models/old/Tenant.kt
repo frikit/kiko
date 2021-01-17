@@ -1,4 +1,4 @@
-package org.github.frikit.models
+package org.github.frikit.models.old
 
 import java.time.Instant
 

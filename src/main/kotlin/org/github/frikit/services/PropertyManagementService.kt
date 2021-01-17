@@ -2,35 +2,22 @@ package org.github.frikit.services
 
 import io.micronaut.context.annotation.Context
 import org.github.frikit.database.Database
-import org.github.frikit.models.Landlord
 import org.github.frikit.models.Property
+import org.github.frikit.models.PropertyViewingSchedule
 
 @Context
 class PropertyManagementService(
-    private val repository: Database<Landlord>
+    private val repository: Database<Property>,
+    private val scheduleCalculatorService: ScheduleCalculatorService
 ) {
 
-    fun findAll(): List<Property> {
-        return repository.findAll().map { it.properties }.flatten()
+    fun findByID(propertyID: String): Property {
+        return repository.findByID(propertyID)
     }
 
-    fun findByID(landlordID: String): List<Property> {
-        return repository.findByID(landlordID).properties
+    fun createScheduleForProperty(propertyID: String, schedule: PropertyViewingSchedule) {
+        val slots = scheduleCalculatorService.calculateSlots(schedule)
     }
 
-    fun findByID(landlordID: String, propID: String): Property {
-        return repository.findByID(landlordID).properties.find { it.id == propID }
-            ?: throw RuntimeException("Unable to find prop ID=$propID")
-    }
-
-    fun add(landlordID: String, prop: Property) {
-        add(landlordID, listOf(prop))
-    }
-
-    fun add(landlordID: String, prop: List<Property>) {
-        val findLandlord = repository.findByID(landlordID)
-        repository.delete(findLandlord.id)
-        repository.save(findLandlord.copy(properties = prop))
-    }
 
 }

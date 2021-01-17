@@ -2,7 +2,7 @@ package org.github.frikit.controllers
 
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.*
-import org.github.frikit.models.Landlord
+import org.github.frikit.models.old.Landlord
 import org.github.frikit.services.LandlordService
 
 @Controller("/landlords")

@@ -2,7 +2,7 @@ package org.github.frikit.services
 
 import io.micronaut.context.annotation.Context
 import org.github.frikit.database.Database
-import org.github.frikit.models.Landlord
+import org.github.frikit.models.old.Landlord
 
 @Context
 class LandlordService(

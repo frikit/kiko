@@ -27,6 +27,7 @@ Constrains:
 | Sunday | 17:00 - 18:00 | Fix issue with injection |
 | Sunday | 19:00 - 20:00 | setup couple models, basic first controller and service as well, finish setup tests adn write couple tests to validate current behavior |
 | Sunday | 20:00 - 20:30 | start work on property itself controllers and realise I am going in wrong direction :D |
+| Sunday | 21:00 - 22:30 | implement slot calculator service + tests |
 |  |  |  |
 
 
