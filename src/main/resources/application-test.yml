@@ -1,0 +1,5 @@
+micronaut:
+  application:
+    name: kiko
+  server:
+    port: 8909

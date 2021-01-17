@@ -25,6 +25,7 @@ Constrains:
 | :--- | :---: | :----------- |
 | Saturday | 18:00 - 20:00 | Setup project, read documentation |
 | Sunday | 17:00 - 18:00 | Fix issue with injection |
+| Sunday | 19:00 - 20:00 | setup couple models, basic first controller and service as well, finish setup tests adn write couple tests to validate current behavior |
 |  |  |  |
 
 

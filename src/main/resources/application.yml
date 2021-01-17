@@ -1,5 +1,8 @@
 micronaut:
-  server:
-    port: 8080
   application:
     name: kiko
+  http:
+    services:
+      local_app:
+        urls:
+          - http://
