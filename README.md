@@ -23,8 +23,9 @@ Constrains:
 ## Time tracker:
 | Day | Time | Description |
 | :--- | :---: | :----------- |
-| Saturday | 18:00 - 20:00 | Setup project, read documentation
-|  |  |
+| Saturday | 18:00 - 20:00 | Setup project, read documentation |
+| Sunday | 17:00 - 18:00 | Fix issue with injection |
+|  |  |  |
 
 
 ## Feature http-client documentation
