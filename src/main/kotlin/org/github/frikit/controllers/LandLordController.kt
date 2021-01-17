@@ -16,7 +16,7 @@ class LandLordController(
     }
 
     @Get("/landlord/{id}")
-    fun addLandLord(@PathVariable id: String): Landlord {
+    fun getLandLord(@PathVariable id: String): Landlord {
         return landlordService.findByID(id)
     }
 

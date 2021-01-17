@@ -32,4 +32,8 @@ class InMemoryLandlordDatabase : Database<Landlord> {
         db.clear()
     }
 
+    override fun delete(id: String) {
+        db.remove(id)
+    }
+
 }

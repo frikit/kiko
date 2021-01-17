@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import javax.inject.Inject
 
-@MicronautTest
+@MicronautTest(startApplication = true)
 abstract class BaseTestClass {
 
     private val log = LoggerFactory.getLogger(BaseTestClass::class.java)

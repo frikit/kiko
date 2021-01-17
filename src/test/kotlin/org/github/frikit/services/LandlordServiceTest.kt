@@ -36,7 +36,7 @@ internal class LandlordServiceTest : BaseTestClass() {
     }
 
     @Test
-    fun testAddlLandlordsInDB() {
+    fun testAddLandlordsInDB() {
         val landLord1 = generateLandLord()
         val landLord2 = generateLandLord()
         val list = listOf(landLord1, landLord2).sortedBy { it.id }

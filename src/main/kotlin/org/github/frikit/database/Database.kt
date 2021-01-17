@@ -11,4 +11,6 @@ interface Database<T> {
     fun findAll(): Collection<T>
 
     fun deleteAll()
+
+    fun delete(id: String)
 }
