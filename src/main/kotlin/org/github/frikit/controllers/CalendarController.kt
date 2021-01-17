@@ -16,12 +16,15 @@ class CalendarController(
         return "Hello world"
     }
 
-    @Put("/calendar/{propertyID}")
+    /**
+     * TODO If try to add for the same property schedule should check if it overlap if existing one and merge or override?
+     */
+    @Put("/calendar/{landlordID}/{propertyID}")
     fun addCalendarForProperty(
+        @PathVariable landlordID: String,
         @PathVariable propertyID: String,
         @Body schedule: PropertyViewingSchedule
-    ): String {
-        propMgt.createScheduleForProperty(propertyID, schedule)
-        return "Hello world"
+    ) {
+        propMgt.createScheduleForProperty(landlordID, propertyID, schedule)
     }
 }

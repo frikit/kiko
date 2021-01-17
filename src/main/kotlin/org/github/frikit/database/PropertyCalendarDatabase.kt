@@ -2,36 +2,37 @@ package org.github.frikit.database
 
 import io.micronaut.context.annotation.Context
 import org.github.frikit.models.Property
-import org.github.frikit.models.old.Landlord
 import java.util.concurrent.ConcurrentHashMap
 
 @Context
 class PropertyCalendarDatabase : Database<Property> {
 
-    private val db = ConcurrentHashMap<String, Landlord>()
+    private val db = ConcurrentHashMap<String, Property>()
+
     override fun save(t: Property): Property {
-        TODO("Not yet implemented")
+        db[t.id] = t
+        return t
     }
 
     override fun saveAll(t: Collection<Property>): Collection<Property> {
-        TODO("Not yet implemented")
+        t.forEach { save(it) }
+        return t
     }
 
     override fun findByID(id: String): Property {
-        TODO("Not yet implemented")
+        return db[id] ?: throw RuntimeException("Can't find property with ID=$id")
     }
 
     override fun findAll(): Collection<Property> {
-        TODO("Not yet implemented")
+        return db.values.toList()
     }
 
     override fun deleteAll() {
-        TODO("Not yet implemented")
+        db.clear()
     }
 
     override fun delete(id: String) {
-        TODO("Not yet implemented")
+        db.remove(id)
     }
-
 
 }
