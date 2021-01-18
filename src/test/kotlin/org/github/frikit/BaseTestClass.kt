@@ -4,8 +4,6 @@ import io.micronaut.http.HttpRequest
 import io.micronaut.http.server.util.HttpHostResolver
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.github.frikit.database.PropertyCalendarDatabase
-//import org.github.frikit.database.InMemoryLandlordDatabase
-import org.github.frikit.models.old.Landlord
 import org.slf4j.LoggerFactory
 import java.time.Instant
 import java.util.*
@@ -22,14 +20,6 @@ abstract class BaseTestClass {
 
     @Inject
     lateinit var httpHostResolver: HttpHostResolver
-
-    fun generateLandLord(): Landlord {
-        return Landlord(
-            id = UUID.randomUUID().toString(),
-            name = UUID.randomUUID().toString().take(4),
-            properties = emptyList()
-        )
-    }
 
     fun buildURL(url: String): String {
         val req = HttpRequest.GET<Void>(url)
