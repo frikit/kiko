@@ -3,9 +3,10 @@ package org.github.frikit.models
 import java.time.Instant
 
 data class TimeSlot(
-    val bookedByTenantID: String? = null,
+    var bookedByTenantID: String? = null,
     val start: Instant,
     val end: Instant,
+    val status: SlotStatus = SlotStatus.NOT_BOOKED
 ) {
     fun isBooked(): Boolean {
         return bookedByTenantID != null
