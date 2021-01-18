@@ -8,8 +8,8 @@ data class TimeSlot(
     val end: Instant,
     val status: SlotStatus = SlotStatus.NOT_BOOKED
 ) {
-    fun isBooked(): Boolean {
-        return bookedByTenantID != null
+    fun canBeBooked(): Boolean {
+        return status == SlotStatus.NOT_BOOKED
     }
 }
 

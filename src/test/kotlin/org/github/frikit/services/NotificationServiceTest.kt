@@ -24,6 +24,20 @@ internal class NotificationServiceTest : BaseTestClass() {
         return listOf(schedule)
     }
 
+    private fun generateNotification(slotToBook: TimeSlot): Notification {
+        val notification = Notification(
+            id = "id1",
+            propID = propertyID,
+            userEmail = "test@test.com",
+            landlordEmail = "landlord@test.com",
+            where = "url",
+            text = "test notification",
+            bookTimeSlot = BookTimeSlot(slotToBook.start, slotToBook.end)
+        )
+
+        return notification
+    }
+
     val landLordID = "test1"
     val propertyID = "prop1"
 
@@ -44,13 +58,7 @@ internal class NotificationServiceTest : BaseTestClass() {
     @Test
     fun testSendNotification() {
         val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
-        val notification = Notification(
-            id = "id1",
-            propID = propertyID,
-            where = "url",
-            text = "test notification",
-            bookTimeSlot = BookTimeSlot(slotToBook.start, slotToBook.end)
-        )
+        val notification = generateNotification(slotToBook)
 
         notificationService.sendNotification(notification)
 
@@ -60,13 +68,7 @@ internal class NotificationServiceTest : BaseTestClass() {
     @Test
     fun testSendAcceptResponseToNotification() {
         val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
-        val notification = Notification(
-            id = "id1",
-            propID = propertyID,
-            where = "url",
-            text = "test notification",
-            bookTimeSlot = BookTimeSlot(slotToBook.start, slotToBook.end)
-        )
+        val notification = generateNotification(slotToBook)
 
         notificationService.sendNotification(notification)
 
@@ -74,7 +76,12 @@ internal class NotificationServiceTest : BaseTestClass() {
 
         //send response
         val response =
-            NotificationResponse(id = notification.id, propID = notification.propID, response = ResponseType.ACCEPT)
+            NotificationResponse(
+                id = notification.id,
+                propID = notification.propID,
+                response = ResponseType.ACCEPT,
+                from = UserType.LAND_LORD
+            )
 
         notificationService.updateSlotFromNotificationResponse(response)
 
@@ -84,13 +91,7 @@ internal class NotificationServiceTest : BaseTestClass() {
     @Test
     fun testSendRejectResponseToNotification() {
         val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
-        val notification = Notification(
-            id = "id1",
-            propID = propertyID,
-            where = "url",
-            text = "test notification",
-            bookTimeSlot = BookTimeSlot(slotToBook.start, slotToBook.end)
-        )
+        val notification = generateNotification(slotToBook)
 
         notificationService.sendNotification(notification)
 
@@ -98,7 +99,12 @@ internal class NotificationServiceTest : BaseTestClass() {
 
         //send response
         val response =
-            NotificationResponse(id = notification.id, propID = notification.propID, response = ResponseType.REJECT)
+            NotificationResponse(
+                id = notification.id,
+                propID = notification.propID,
+                response = ResponseType.REJECT,
+                from = UserType.LAND_LORD
+            )
 
         notificationService.updateSlotFromNotificationResponse(response)
 
@@ -108,13 +114,7 @@ internal class NotificationServiceTest : BaseTestClass() {
     @Test
     fun testSendAcceptResponseTwoTimesToNotification() {
         val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
-        val notification = Notification(
-            id = "id1",
-            propID = propertyID,
-            where = "url",
-            text = "test notification",
-            bookTimeSlot = BookTimeSlot(slotToBook.start, slotToBook.end)
-        )
+        val notification = generateNotification(slotToBook)
 
         notificationService.sendNotification(notification)
 
@@ -122,7 +122,12 @@ internal class NotificationServiceTest : BaseTestClass() {
 
         //send response
         val response =
-            NotificationResponse(id = notification.id, propID = notification.propID, response = ResponseType.ACCEPT)
+            NotificationResponse(
+                id = notification.id,
+                propID = notification.propID,
+                response = ResponseType.ACCEPT,
+                from = UserType.LAND_LORD
+            )
 
         notificationService.updateSlotFromNotificationResponse(response)
         Assertions.assertEquals(0, notificationService.notifications.size)
@@ -137,13 +142,7 @@ internal class NotificationServiceTest : BaseTestClass() {
     @Test
     fun testSendRejectResponseTwoTimesToNotification() {
         val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
-        val notification = Notification(
-            id = "id1",
-            propID = propertyID,
-            where = "url",
-            text = "test notification",
-            bookTimeSlot = BookTimeSlot(slotToBook.start, slotToBook.end)
-        )
+        val notification = generateNotification(slotToBook)
 
         notificationService.sendNotification(notification)
 
@@ -151,7 +150,12 @@ internal class NotificationServiceTest : BaseTestClass() {
 
         //send response
         val response =
-            NotificationResponse(id = notification.id, propID = notification.propID, response = ResponseType.REJECT)
+            NotificationResponse(
+                id = notification.id,
+                propID = notification.propID,
+                response = ResponseType.REJECT,
+                from = UserType.LAND_LORD
+            )
 
         notificationService.updateSlotFromNotificationResponse(response)
         Assertions.assertEquals(0, notificationService.notifications.size)
