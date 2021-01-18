@@ -29,7 +29,9 @@ class PropertyManagementService(
         var booked = false
         val newSlots = property.slots.map { slot ->
             if (slot.start == start && slot.end == end) {
-                if (!slot.canBeBooked()) throw RuntimeException("Slot you are trying to book cannot be booked at this moment!")
+                if (!slot.canBeBooked())
+                    throw RuntimeException("Slot you are trying to book cannot be booked at this moment!")
+
                 booked = true
                 notificationService.sendNotification(
                     Notification(

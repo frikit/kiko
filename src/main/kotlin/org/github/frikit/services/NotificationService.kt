@@ -32,48 +32,88 @@ class NotificationService(
     }
 
     fun updateSlotFromNotificationResponse(notification: NotificationResponse) {
+        fun ResponseType.getSLotStatus(): SlotStatus {
+            return when (this) {
+                ResponseType.ACCEPT -> SlotStatus.BOOKED
+                ResponseType.REJECT -> SlotStatus.REJECTED_BY_LANDLORD
+            }
+        }
+
         val property = repository.findByID(notification.propID)
         val notif = notifications[notification.id] ?: throw RuntimeException("No such notification in the system!")
-
-        if (notification.from == UserType.TENANT && notification.response == ResponseType.ACCEPT) {
-            //ignore
-        } else if (notification.from == UserType.TENANT && notification.response == ResponseType.REJECT) {
-            val status = SlotStatus.NOT_BOOKED
-
-            val newSlots = property.slots.map {
-                if (it.start == notif.bookTimeSlot.start && it.end == notif.bookTimeSlot.end && it.status == SlotStatus.WAITING_CONFIRMATION)
-                    it.copy(status = status)
-                else
-                    it
-            }
-
-            repository.save(property.copy(slots = newSlots))
-
-            sendEmail("Property view: ${notification.response}", "User cancel viewing!", notif.landlordEmail)
-            notifications.remove(notification.id)
-        } else {
-            //landlord response
-            val status = if (notification.response == ResponseType.ACCEPT) {
-                SlotStatus.BOOKED
-            } else {
-                SlotStatus.REJECTED_BY_LANDLORD
-            }
-
-            val newSlots = property.slots.map {
-                if (it.start == notif.bookTimeSlot.start && it.end == notif.bookTimeSlot.end && it.status == SlotStatus.WAITING_CONFIRMATION)
-                    it.copy(status = status)
-                else
-                    it
-            }
-
-            repository.save(property.copy(slots = newSlots))
-
-            sendEmail(
-                "Property view: ${notification.response}",
-                "Please be on time for view property!",
-                notif.userEmail
+        when {
+            tenantRejectedBooking(notification) -> handleTenantRejectedBooking(property, notif, notification)
+            tenantAcceptedBooking(notification) -> return // no implementation needed
+            //landlord
+            else -> handleLandlordNotification(
+                property,
+                notif,
+                notification.response.getSLotStatus(),
+                notification
             )
-            notifications.remove(notification.id)
         }
+    }
+
+    private fun handleLandlordNotification(
+        property: Property,
+        notif: Notification,
+        status: SlotStatus,
+        notification: NotificationResponse
+    ) {
+        val newSlots = getNewSlots(property, notif, status)
+        repository.save(property.copy(slots = newSlots))
+        sendEmail(
+            "Property view: ${notification.response}",
+            "Please be on time for view property!",
+            notif.userEmail
+        )
+        notifications.remove(notification.id)
+    }
+
+    private fun handleTenantRejectedBooking(
+        property: Property,
+        notif: Notification,
+        notification: NotificationResponse
+    ) {
+        val status = SlotStatus.NOT_BOOKED
+        val newSlots = getNewSlots(property, notif, status, null)
+        repository.save(property.copy(slots = newSlots))
+        sendEmail("Property view: ${notification.response}", "User cancel viewing!", notif.landlordEmail)
+        notifications.remove(notification.id)
+    }
+
+    private fun tenantRejectedBooking(notification: NotificationResponse) =
+        notification.from == UserType.TENANT && notification.response == ResponseType.REJECT
+
+    private fun tenantAcceptedBooking(notification: NotificationResponse) =
+        notification.from == UserType.TENANT && notification.response == ResponseType.ACCEPT
+
+    private fun getNewSlots(
+        property: Property,
+        notif: Notification,
+        status: SlotStatus,
+        bookedByTenantID: String?
+    ): List<TimeSlot> {
+        val newSlots = property.slots.map {
+            if (it.start == notif.bookTimeSlot.start && it.end == notif.bookTimeSlot.end && it.status == SlotStatus.WAITING_CONFIRMATION)
+                it.copy(bookedByTenantID = bookedByTenantID, status = status)
+            else
+                it
+        }
+        return newSlots
+    }
+
+    private fun getNewSlots(
+        property: Property,
+        notif: Notification,
+        status: SlotStatus
+    ): List<TimeSlot> {
+        val newSlots = property.slots.map {
+            if (it.start == notif.bookTimeSlot.start && it.end == notif.bookTimeSlot.end && it.status == SlotStatus.WAITING_CONFIRMATION)
+                it.copy(status = status)
+            else
+                it
+        }
+        return newSlots
     }
 }

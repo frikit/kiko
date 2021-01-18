@@ -11,7 +11,7 @@ class NotificationController(
     private val notificationService: NotificationService
 ) {
 
-    @Put("landlord-response")
+    @Put("response")
     fun getCalendarForProperty(
         @Body response: NotificationResponse
     ) {

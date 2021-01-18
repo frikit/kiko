@@ -57,79 +57,61 @@ internal class NotificationServiceTest : BaseTestClass() {
 
     @Test
     fun testSendNotification() {
-        val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
-        val notification = generateNotification(slotToBook)
-
-        notificationService.sendNotification(notification)
+        sendNotification()
 
         Assertions.assertEquals(1, notificationService.notifications.size)
     }
 
     @Test
     fun testSendAcceptResponseToNotification() {
-        val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
-        val notification = generateNotification(slotToBook)
-
-        notificationService.sendNotification(notification)
+        val notification = sendNotification()
 
         Assertions.assertEquals(1, notificationService.notifications.size)
 
         //send response
-        val response =
-            NotificationResponse(
-                id = notification.id,
-                propID = notification.propID,
-                response = ResponseType.ACCEPT,
-                from = UserType.LAND_LORD
-            )
-
-        notificationService.updateSlotFromNotificationResponse(response)
+        updateSlotSendNotification(notification, ResponseType.ACCEPT, UserType.LAND_LORD)
 
         Assertions.assertEquals(0, notificationService.notifications.size)
     }
 
     @Test
     fun testSendRejectResponseToNotification() {
-        val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
-        val notification = generateNotification(slotToBook)
-
-        notificationService.sendNotification(notification)
+        val notification = sendNotification()
 
         Assertions.assertEquals(1, notificationService.notifications.size)
 
         //send response
-        val response =
-            NotificationResponse(
-                id = notification.id,
-                propID = notification.propID,
-                response = ResponseType.REJECT,
-                from = UserType.LAND_LORD
-            )
-
-        notificationService.updateSlotFromNotificationResponse(response)
+        updateSlotSendNotification(notification, ResponseType.REJECT, UserType.LAND_LORD)
 
         Assertions.assertEquals(0, notificationService.notifications.size)
     }
 
+    private fun updateSlotSendNotification(
+        notification: Notification,
+        response: ResponseType,
+        from: UserType
+    ): NotificationResponse {
+        val response = NotificationResponse(
+            id = notification.id,
+            propID = notification.propID,
+            response = response,
+            from = from
+        )
+
+        notificationService.updateSlotFromNotificationResponse(response)
+
+        return response
+    }
+
     @Test
     fun testSendAcceptResponseTwoTimesToNotification() {
-        val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
-        val notification = generateNotification(slotToBook)
-
-        notificationService.sendNotification(notification)
+        val notification = sendNotification()
 
         Assertions.assertEquals(1, notificationService.notifications.size)
 
         //send response
-        val response =
-            NotificationResponse(
-                id = notification.id,
-                propID = notification.propID,
-                response = ResponseType.ACCEPT,
-                from = UserType.LAND_LORD
-            )
+        val response = updateSlotSendNotification(notification, ResponseType.ACCEPT, UserType.LAND_LORD)
 
-        notificationService.updateSlotFromNotificationResponse(response)
         Assertions.assertEquals(0, notificationService.notifications.size)
 
         assertThrows<RuntimeException>(
@@ -141,23 +123,13 @@ internal class NotificationServiceTest : BaseTestClass() {
 
     @Test
     fun testSendRejectResponseTwoTimesToNotification() {
-        val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
-        val notification = generateNotification(slotToBook)
-
-        notificationService.sendNotification(notification)
+        val notification = sendNotification()
 
         Assertions.assertEquals(1, notificationService.notifications.size)
 
         //send response
-        val response =
-            NotificationResponse(
-                id = notification.id,
-                propID = notification.propID,
-                response = ResponseType.REJECT,
-                from = UserType.LAND_LORD
-            )
+        val response = updateSlotSendNotification(notification, ResponseType.REJECT, UserType.LAND_LORD)
 
-        notificationService.updateSlotFromNotificationResponse(response)
         Assertions.assertEquals(0, notificationService.notifications.size)
 
         assertThrows<RuntimeException>(
@@ -165,6 +137,14 @@ internal class NotificationServiceTest : BaseTestClass() {
         ) {
             notificationService.updateSlotFromNotificationResponse(response)
         }
+    }
+
+    private fun sendNotification(): Notification {
+        val slotToBook = propertyManagementService.getSlotsForProperty(propertyID).first()
+        val notification = generateNotification(slotToBook)
+
+        notificationService.sendNotification(notification)
+        return notification
     }
 
 }

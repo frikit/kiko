@@ -18,6 +18,10 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
     @Inject
     lateinit var notificationService: NotificationService
 
+    val landLordID = "test1"
+    val propertyID = "prop1"
+    val tenantID = "tenant1"
+
     private fun generateOneHourSlotWith20MinutesSlot(): List<PropertyViewingSchedule> {
         val start = initSchedule(2020, 12, 1, 9, 9)
         val end = initSchedule(2020, 12, 1, 10, 9)
@@ -36,6 +40,18 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
         }
     }
 
+    private fun createScheduleForOneDay() {
+        val schedule = generateOneHourSlotWith20MinutesSlot()
+
+        service.createScheduleForProperty(landLordID, propertyID, schedule)
+    }
+
+    private fun createScheduleFor7Days() {
+        val schedule = generateOneHourSlotWith20MinutesSlotForNext7Days()
+
+        service.createScheduleForProperty(landLordID, propertyID, schedule)
+    }
+
     @BeforeEach
     fun setUp() {
         propertyCalendarDatabase.deleteAll()
@@ -47,12 +63,8 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
     }
 
     @Test
-    fun testAddCalendarForPropertyOneDay() {
-        val landLordID = "test1"
-        val propertyID = "prop1"
-        val schedule = generateOneHourSlotWith20MinutesSlot()
-
-        service.createScheduleForProperty(landLordID, propertyID, schedule)
+    fun testAddCalendarForPropertyForOneDay() {
+        createScheduleForOneDay()
 
         assertEquals(1, propertyCalendarDatabase.findAll().size, "In system should be only one property")
         assertEquals(
@@ -78,13 +90,8 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
     }
 
     @Test
-    fun testAddCalendarForPropertyMultiDay() {
-        val landLordID = "test1"
-        val propertyID = "prop1"
-        val schedule = generateOneHourSlotWith20MinutesSlotForNext7Days()
-
-        service.createScheduleForProperty(landLordID, propertyID, schedule)
-
+    fun testAddCalendarForPropertyForMultiDay() {
+        createScheduleFor7Days()
         assertEquals(1, propertyCalendarDatabase.findAll().size, "In system should be only one property")
         assertEquals(
             propertyID,
@@ -99,23 +106,18 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
         assertEquals(
             210,
             propertyCalendarDatabase.findAll().first().slots.size,
-            "In system should be only one property with 3 slots"
+            "In system should be only one property with 231 slots for all days"
         )
         assertEquals(
             210,
             propertyCalendarDatabase.findAll().first().slots.map { it.bookedByTenantID }.count { it == null },
-            "In system should be only one property with 3 slots and all 3 slots should not be booked"
+            "In system should be only one property with 231 slots for all days and none are booked"
         )
     }
 
     @Test
     fun testGetSlotsForProperty() {
-        val landLordID = "test1"
-        val propertyID = "prop1"
-        val schedule = generateOneHourSlotWith20MinutesSlot()
-
-        service.createScheduleForProperty(landLordID, propertyID, schedule)
-
+        createScheduleForOneDay()
         val slots = service.getSlotsForProperty(propertyID)
 
         assertEquals(3, slots.size, "In system should be only one property")
@@ -128,12 +130,7 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
 
     @Test
     fun testBookSlot() {
-        val landLordID = "test1"
-        val propertyID = "prop1"
-        val tenantID = "tenant1"
-        val schedule = generateOneHourSlotWith20MinutesSlot()
-
-        service.createScheduleForProperty(landLordID, propertyID, schedule)
+        createScheduleForOneDay()
         val slotToBook = service.getSlotsForProperty(propertyID).first()
 
         service.bookSlot(propertyID, tenantID, slotToBook.start, slotToBook.end)
@@ -162,12 +159,7 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
 
     @Test
     fun testBookSlotTwiceSameTenant() {
-        val landLordID = "test1"
-        val propertyID = "prop1"
-        val tenantID = "tenant1"
-        val schedule = generateOneHourSlotWith20MinutesSlot()
-
-        service.createScheduleForProperty(landLordID, propertyID, schedule)
+        createScheduleFor7Days()
         val slotToBook = service.getSlotsForProperty(propertyID).first()
 
         service.bookSlot(propertyID, tenantID, slotToBook.start, slotToBook.end)
@@ -180,12 +172,7 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
 
     @Test
     fun testBookSlotTwiceDifferentTenant() {
-        val landLordID = "test1"
-        val propertyID = "prop1"
-        val tenantID = "tenant2"
-        val schedule = generateOneHourSlotWith20MinutesSlot()
-
-        service.createScheduleForProperty(landLordID, propertyID, schedule)
+        createScheduleFor7Days()
         val slotToBook = service.getSlotsForProperty(propertyID).first()
 
         service.bookSlot(propertyID, tenantID, slotToBook.start, slotToBook.end)
@@ -198,12 +185,7 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
 
     @Test
     fun testBookSlotAcceptByLandlordResponseCannotBeBooked() {
-        val landLordID = "test1"
-        val propertyID = "prop1"
-        val tenantID = "tenant1"
-        val schedule = generateOneHourSlotWith20MinutesSlot()
-
-        service.createScheduleForProperty(landLordID, propertyID, schedule)
+        createScheduleForOneDay()
         val slotToBook = service.getSlotsForProperty(propertyID).first()
 
         service.bookSlot(propertyID, tenantID, slotToBook.start, slotToBook.end)
@@ -250,12 +232,7 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
 
     @Test
     fun testBookSlotRejectedByLandlordResponseCannotBeBooked() {
-        val landLordID = "test1"
-        val propertyID = "prop1"
-        val tenantID = "tenant1"
-        val schedule = generateOneHourSlotWith20MinutesSlot()
-
-        service.createScheduleForProperty(landLordID, propertyID, schedule)
+        createScheduleForOneDay()
         val slotToBook = service.getSlotsForProperty(propertyID).first()
 
         service.bookSlot(propertyID, tenantID, slotToBook.start, slotToBook.end)
@@ -300,13 +277,9 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
         }
     }
 
+    @Test
     fun testBookSlotRejectedByTenantResponseCanBeBookedAgain() {
-        val landLordID = "test1"
-        val propertyID = "prop1"
-        val tenantID = "tenant1"
-        val schedule = generateOneHourSlotWith20MinutesSlot()
-
-        service.createScheduleForProperty(landLordID, propertyID, schedule)
+        createScheduleForOneDay()
         val slotToBook = service.getSlotsForProperty(propertyID).first()
 
         service.bookSlot(propertyID, tenantID, slotToBook.start, slotToBook.end)
@@ -345,7 +318,7 @@ internal class PropertyManagementServiceTest : BaseTestClass() {
         notificationService.updateSlotFromNotificationResponse(response)
 
         assertDoesNotThrow(
-            "Should throw exception as slot is booked"
+            "Should not throw exception as slot is booked"
         ) {
             service.bookSlot(propertyID, tenantID, slotToBook.start, slotToBook.end)
         }
