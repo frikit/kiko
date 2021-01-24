@@ -7,5 +7,5 @@ data class PropertyViewingSchedule(
     val startTime: Instant,
     val endTime: Instant,
     val slotDuration: Duration,
-    val ignoreSlots: List<Pair<Instant, Instant>>,
+    val ignoreSlots: List<Pair<Instant, Instant>> = emptyList(),
 )
